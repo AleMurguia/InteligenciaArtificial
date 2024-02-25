@@ -61,7 +61,7 @@ public class EightPuzzle {
                 return;
         }
 
-        // Cálculo del tiempo transcurrido.
+        // Cálculo del tiempo y espacio transcurrido.
         elapsedTime = System.currentTimeMillis() - startTime;
         System.out.println(searchType);
         System.out.println("Time: " + elapsedTime + " milliseconds");
