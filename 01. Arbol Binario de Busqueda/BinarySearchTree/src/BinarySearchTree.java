@@ -44,6 +44,26 @@ public class BinarySearchTree {
         }
     }
 
+
+    // Método para buscar un valor en el árbol.
+    public boolean search(int value) {
+        return searchRecursive(root, value);
+    }
+
+    private boolean searchRecursive(Node node, int value) {
+        if (node == null) {
+            return false;
+        }
+        if (value == node.value) {
+            return true;
+        } else if (value < node.value) {
+            return searchRecursive(node.left, value);
+        } else {
+            return searchRecursive(node.right, value);
+        }
+    }
+
+
     public boolean isEmpty() {
         return root == null;
     }
@@ -52,6 +72,7 @@ public class BinarySearchTree {
         private final BinarySearchTree tree;
 
         public TreeUI(BinarySearchTree tree) {
+
             this.tree = tree;
         }
 
@@ -63,6 +84,23 @@ public class BinarySearchTree {
                 JOptionPane.showMessageDialog(null, "Traversal:\n" + tree.inorder());
             }
         }
+
+        // Método para solicitar al usuario el valor a buscar y mostrar el resultado.
+        public void searchNode() {
+            String input = JOptionPane.showInputDialog("Enter the value of the node to search:");
+            try {
+                int value = Integer.parseInt(input);
+                boolean found = tree.search(value);
+                if (found) {
+                    JOptionPane.showMessageDialog(null, "The value " + value + " exists in the tree.");
+                } else {
+                    JOptionPane.showMessageDialog(null, "The value " + value + " does not exist in the tree.");
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Please enter a valid integer.");
+            }
+        }
+
     }
 
     public static void main(String[] args) {
@@ -81,5 +119,6 @@ public class BinarySearchTree {
 
         TreeUI ui = new TreeUI(tree);
         ui.display();
+        ui.searchNode();
     }
 }
