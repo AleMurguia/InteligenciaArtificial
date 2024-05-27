@@ -1,3 +1,4 @@
+import cv2
 from keras.src.models import Sequential
 from tensorflow.keras import layers
 from keras.src.legacy.preprocessing.image import ImageDataGenerator
@@ -30,12 +31,51 @@ test_data = ImageDataGenerator(rescale=1./255).flow_from_directory(
 model.fit(train_data, epochs=40, steps_per_epoch=int(5000), validation_steps=int(1000),
           validation_data=test_data)
 
-# Obtener la imagen a predecir
-img = "cnn/dataset/test/yo/Alexandra1.jpg"
-test_img = image.load_img(img, target_size=(64, 64))
-test_img = image.img_to_array(test_img)
-test_img = np.expand_dims(test_img, axis=0)
+# Captura continua de imágenes desde la cámara y predicción
 
-# Predicicon
-prediction = model.predict(test_img)
-print(f'Prediccion: {'Famoso' if prediction[0][0] >= 0.5 else 'Alexandra ❤️'}')
+
+def capture_and_predict():
+    cap = cv2.VideoCapture(0)
+    if not cap.isOpened():
+        print("Error: No se puede abrir la cámara")
+        return
+
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            print("Error: No se puede recibir la imagen")
+            break
+
+        # Preprocesar el fotograma
+        frame_resized = cv2.resize(frame, (64, 64))
+        test_img = image.img_to_array(frame_resized)
+        test_img = np.expand_dims(test_img, axis=0)
+
+        # Predicción
+        prediction = model.predict(test_img)
+        label = "Famoso" if prediction[0][0] >= 0.5 else "Alexandra <3"
+
+        # Mostrar la predicción en el fotograma
+        cv2.putText(frame, label, (10, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                    1, (0, 255, 0), 2, cv2.LINE_AA)
+        cv2.imshow('frame', frame)
+
+        # Salir del bucle si se presiona la tecla 'q'
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+
+capture_and_predict()
+
+# Obtener la imagen a predecir
+# img = "cnn/dataset/test/yo/Alexandra1.jpg"
+# test_img = image.load_img(img, target_size=(64, 64))
+# test_img = image.img_to_array(test_img)
+# test_img = np.expand_dims(test_img, axis=0)
+
+# # Predicicon
+# prediction = model.predict(test_img)
+# print(f'Prediccion: {'Famoso' if prediction[0][0] >= 0.5 else 'Alexandra ❤️'}')
