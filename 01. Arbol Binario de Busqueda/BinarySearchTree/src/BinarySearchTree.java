@@ -10,7 +10,7 @@ public class BinarySearchTree {
         root = insertRecursive(root, value);
     }
 
-    // Actúa para insertar un valor en el lugar correcto del árbol.
+    // Actúa para insertar un valor en el lugar correcto del árbol
     private Node insertRecursive(Node node, int value) {
         if (node == null) {
             node = new Node(value);
