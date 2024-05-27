@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class EightPuzzle {
-
+    private int maxFrontierSize = 0;
 
     public static void main(String[] args) {
         EightPuzzle puzzleSolver = new EightPuzzle();
@@ -42,15 +42,18 @@ public class EightPuzzle {
         System.out.println(hearts);
 
         int searchOption = inputScanner.nextInt();
+        String searchType;
         long startTime = System.currentTimeMillis();
         long elapsedTime;
 
         // Ejecución del tipo de búsqueda elegido.
         switch (searchOption) {
             case 1:
+                searchType = "Breadth First Search";
                 puzzleSolver.breadthFirstSearch(startState);
                 break;
             case 2:
+                searchType = "Depth First Search";
                 puzzleSolver.depthFirstSearch(startState);
                 break;
             default:
@@ -58,8 +61,11 @@ public class EightPuzzle {
                 return;
         }
 
+        // Cálculo del tiempo y espacio transcurrido.
         elapsedTime = System.currentTimeMillis() - startTime;
+        System.out.println(searchType);
         System.out.println("Time: " + elapsedTime + " milliseconds");
+        System.out.println("Space: " + puzzleSolver.maxFrontierSize + " nodes");
 
         inputScanner.close();
     }
@@ -88,6 +94,7 @@ public class EightPuzzle {
     public void breadthFirstSearch(String startState) {
         Queue<Node> frontier = new LinkedList<>();
         Set<String> exploredStates = new HashSet<>();
+        maxFrontierSize = 0;
 
         Node rootNode = new Node(startState, null);
         frontier.add(rootNode);
@@ -97,6 +104,7 @@ public class EightPuzzle {
             if (expandNode(currentNode, frontier, exploredStates)) {
                 return;
             }
+            maxFrontierSize = Math.max(maxFrontierSize, frontier.size());
         }
         System.out.println("No solution found");
     }
@@ -105,7 +113,7 @@ public class EightPuzzle {
     public void depthFirstSearch(String startState) {
         Stack<Node> frontier = new Stack<>();
         Set<String> exploredStates = new HashSet<>();
-
+        maxFrontierSize = 0;
 
         Node rootNode = new Node(startState, null);
         frontier.push(rootNode);
@@ -115,7 +123,7 @@ public class EightPuzzle {
             if (expandNode(currentNode, frontier, exploredStates)) {
                 return;
             }
-
+            maxFrontierSize = Math.max(maxFrontierSize, frontier.size());
         }
         System.out.println("No solution found");
     }
@@ -145,7 +153,6 @@ public class EightPuzzle {
     }
 
     // Verifica si el estado actual es el estado objetivo.
-
     private boolean isGoalState(String state) {
         return "012345678".equals(state);
     }
@@ -154,19 +161,13 @@ public class EightPuzzle {
     // Muestra el camino de solución desde el estado inicial al estado objetivo.
     private void displaySolutionPath(Node goalNode) {
         Stack<String> solutionPath = new Stack<>();
-
-        int size=0;
-
         for (Node node = goalNode; node != null; node = node.parent) {
             solutionPath.push(node.state);
-            size++;
         }
 
         while (!solutionPath.isEmpty()) {
             System.out.println(formatState(solutionPath.pop()));
         }
-
-        System.out.println("Total moves: "+size);
     }
 
     private String formatState(String state) {
